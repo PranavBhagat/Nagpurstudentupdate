@@ -38,7 +38,12 @@ public class AboutusActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_aboutus);
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        //add the arrow to finsh or add the goback support
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(getIntent().getStringExtra("string"));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // get the listview
         expListView = (ExpandableListView) findViewById(R.id.lvExp);
 

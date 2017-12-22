@@ -7,9 +7,15 @@ package com.nagstud.adnan.mobileapp_1;
  *
  * for NagStud LLP Project nagpurstudents
  */
-// i added for testing
+
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,16 +34,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-//hbhbhu bjbjhbjb bjhbjhb
+
 public class getdata extends AppCompatActivity {
     String query = "faculties";
     //the URL having the json data
     private String JSON_URL = "https://www.nagpurstudents.org/api/others/api.php?apicall=" + query;
     //listview object
-    ListView listView, listView2, listView3, listView4;
+    ListView listView, listView2, listView3, listView4, listView5;
     long selection;
     //the facultylist where we will store all the facultyobjects after parsing json
     List<Faculty> facultyList;
@@ -47,6 +55,8 @@ public class getdata extends AppCompatActivity {
     List<Integer> semList;
 
     List<Years> yearsList;
+
+    List<Qpapers> qpapersList;
 
     String facultysend;
     String branchsend;
@@ -68,6 +78,10 @@ public class getdata extends AppCompatActivity {
         //intializing the listview and the years list
         listView4 = (ListView) findViewById(R.id.listView3);
         yearsList = new ArrayList<>();
+        //intializing the listview and the qpapers list
+        listView5 = (ListView) findViewById(R.id.listView3);
+        qpapersList = new ArrayList<>();
+
         //this method will fetch and parse the data
         loadFacultyList();
     }
@@ -144,6 +158,7 @@ public class getdata extends AppCompatActivity {
     private void loadBranchList(String URL, final String facultysend) {
         final String JSON_URL2 = URL;
         final String faculty = facultysend;
+        System.out.println("under loadBranchlist recive url="+JSON_URL2);
         //System.out.println("###################################" + faculty);
         //getting the progressbar
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -246,6 +261,7 @@ public class getdata extends AppCompatActivity {
 
     private void loadSemList(String url, final List<Integer> sem) {
         final String JSON_URL3 = url;
+        System.out.println("under loadsemlist recive url"+JSON_URL3);
         //display the listview for the question paper
         ListView listView = (ListView) findViewById(R.id.listView3);
         //using the array adapter for the listview of the question paper
@@ -267,7 +283,7 @@ public class getdata extends AppCompatActivity {
     private void loadYearList(String url)
     {
         final String JSON_URL3 = url;
-        //System.out.println(JSON_URL3);
+        System.out.println("under loadyearlist recive url="+JSON_URL3);
         //getting the progressbar
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         //  System.out.println(branchList);
@@ -310,8 +326,11 @@ public class getdata extends AppCompatActivity {
                                 public void onItemClick(AdapterView<?> parent, View view,
                                                         int position, long id) {
                                     Years year = yearsList.get(position);
-                                    //System.out.println(year.getCode());
+                                    System.out.println(year.getCode());
+                                    String yearselect = year.getCode();
+
                                     Toast.makeText(getApplicationContext(), "you clicked = "+year.getCode(), Toast.LENGTH_SHORT).show();
+                                    loadPaperList(year.getCode());
                                 }
                             });
                         } catch (JSONException e) {
@@ -332,5 +351,127 @@ public class getdata extends AppCompatActivity {
         //adding the string request to request queue
         requestQueue.add(stringRequest2);
 
+    }
+    private void loadPaperList(String year)
+    {
+        final String JSON_URL4 = "https://www.nagpurstudents.org/api/others/api.php?apicall=" + "papers" + "&&" + "faculty=" + facultysend + "&&" + "branch=" + branchsend + "&&" + "sem=" + semsend + "&&" + "year=" + year;
+
+        System.out.println("under loadPaperlist created url="+JSON_URL4);
+        //getting the progressbar
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        //  System.out.println(branchList);
+        //making the progressbar visible
+        progressBar.setVisibility(View.VISIBLE);
+        //creating a string request to send request to the url
+        StringRequest stringRequest2 = new StringRequest(Request.Method.GET, JSON_URL4,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //hiding the progressbar after completion
+                        progressBar.setVisibility(View.INVISIBLE);
+                        try {
+                            //getting the whole json object from the response
+                            JSONObject obj = new JSONObject(response);
+                            //we have the array named branch inside the object
+                            //so here we are getting that json array
+                            JSONArray qpapersArray = obj.getJSONArray("papers");
+                            //now looping through all the elements of the json array
+                            // qpapersList.clear();
+                            for (int i = 0; i < qpapersArray.length(); i++) {
+                                //getting the json object of the particular index inside the array
+                                JSONObject qpapersObject = qpapersArray.getJSONObject(i);
+                                System.out.println("papersobject" + qpapersObject);
+                                //creating a branch object and giving them the values from json object
+                                Qpapers getqpaper = new Qpapers(qpapersObject.getString("link"), qpapersObject.getString("name"));
+                                System.out.println("Qpaper" + getqpaper.getName());
+                                //adding the branch to branchlist
+                                qpapersList.add(getqpaper);
+                                System.out.print("Qpaper list end");
+                            }
+                            System.out.println("ssssssssssssssssss"+qpapersList);
+                            //creating custom adapter object
+                            ListViewAdapterQpapers adapter2 = new ListViewAdapterQpapers(qpapersList, getApplicationContext());
+                            //adding the adapter to listview
+                            System.out.println(adapter2);
+                            listView5.setAdapter(adapter2);
+                            // Capture ListView item click
+                            listView5.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view,
+                                                        int position, long id) {
+                                    Qpapers qpaper = qpapersList.get(position);
+                                    //System.out.println(year.getCode());
+
+                                    Toast.makeText(getApplicationContext(), "you clicked = "+qpaper.getName(), Toast.LENGTH_SHORT).show();
+                                    downloadFile(qpaper.getLink());
+                                }
+                            });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //displaying the error in toast if occurrs
+
+                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+        //creating a request queue
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        //adding the string request to request queue
+        requestQueue.add(stringRequest2);
+
+    }
+    public void downloadFile(String url)
+    {
+        final String JSON_URL5 = "https://www.nagpurstudents.org/"+url;
+        System.out.println("download file"+JSON_URL5);
+        download(JSON_URL5);
+
+    }
+    public void download(String url)
+    {
+        new DownloadFile().execute("url", "maven.pdf");
+        Log.d("Download complete","----------");
+    }
+
+    public void view(View v)
+    {
+        File pdfFile = new File(Environment.getExternalStorageDirectory() + "/testthreepdf/" + "maven.pdf");  // -> filename = maven.pdf
+        Uri path = Uri.fromFile(pdfFile);
+        Intent pdfIntent = new Intent(Intent.ACTION_VIEW);
+        pdfIntent.setDataAndType(path, "application/pdf");
+        pdfIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        try{
+            startActivity(pdfIntent);
+        }catch(ActivityNotFoundException e){
+            Toast.makeText(getApplication(), "No Application available to view PDF", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private class DownloadFile extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            String fileUrl = strings[0];   // -> http://maven.apache.org/maven-1.x/maven.pdf
+            String fileName = strings[1];  // -> maven.pdf
+            String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+            File folder = new File(extStorageDirectory, "testthreepdf");
+            folder.mkdir();
+
+            File pdfFile = new File(folder, fileName);
+
+            try{
+                pdfFile.createNewFile();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            FileDownloader.downloadFile(fileUrl, pdfFile);
+            return null;
+        }
     }
 }
