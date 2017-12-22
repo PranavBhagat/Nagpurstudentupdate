@@ -31,7 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-
+//hbhbhu
 public class getdata extends AppCompatActivity {
     String query = "faculties";
     //the URL having the json data
