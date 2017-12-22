@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--PMB : this file is to style the Group Heading of About us list i.e expandabe list -->
+
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <stroke android:width="1dp" android:color="#FFFFFF" />
 
-    <solid android:color="#0BB5FF" />
+    <solid android:color="#2ab42a" />
     <corners android:bottomRightRadius="7dp" android:bottomLeftRadius="7dp"
         android:topLeftRadius="10dp" android:topRightRadius="10dp"/>
 </shape>

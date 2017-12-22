@@ -79,4 +79,25 @@
         <item>Summer 2018</item>
 
     </string-array>
+
+    <!--Below string are used for Intro Slider-->
+    <string name="title_activity_welcome">Home Screen</string>
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">GOT IT</string>
+
+    <string name="slide_1_title">NAGSTUD</string>
+    <string name="slide_1_desc">The Easiest way to clear your exams!</string>
+
+    <string name="slide_2_title"> Access to MSBTE</string>
+    <string name="slide_2_desc">Get Daily Updates from University!</string>
+
+    <string name="slide_3_title">Question and Answer Material</string>
+    <string name="slide_3_desc">Get University Solved Papers Here!</string>
+
+    <string name="slide_4_title">Best Support</string>
+    <string name="slide_4_desc">Get support from best people !</string>
+
+    <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
+    <string name="play_again">Play Again</string>
 </resources>
